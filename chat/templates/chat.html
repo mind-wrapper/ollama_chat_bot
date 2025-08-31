@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static%}
+
+{% block title %}
+<title>Chat</title>
+{% endblock title %}
+{% block style %}{% static "css/main_style.css" %}{% endblock style %}
+
+{% block content %}
+
+
+
+
+<div class="app-container">
+
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="bi bi-list"></i>
+    </button>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="sidebar " id="sidebar">
+
+
+        <div class="sidebar-header d-flex align-items-center">
+            <div>
+                <h2 class="mb-0 ">Ollama Chat</h2>
+
+            </div>
+        </div>
+
+        <div id="chatContainer" class="chats-container"></div>
+
+        <div class="sidebar-chats">
+            <div class="p-3 border-top">
+                <button class="btn btn-outline-primary w-100 rounded-pill" id="createChat">
+                    Create chat
+                </button>
+            </div>
+            <div class="theme-toggle" id="themeToggle">
+                <i class="bi bi-moon-fill" id="themeIcon"></i>
+            </div>
+            <a href="logout/">logout</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <div class="chat-messages" id="messagesDiv">
+
+        </div>
+
+        <div class="chat-input ">
+            <form id="messageInput">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="prompt" class="form-control" id="prompt">
+
+
+                    <button type="submit" class="btn btn-send" id="prompt_send">
+                        send
+                    </button>
+                </div>
+                <select name="model" class="rounded-pill bg-transparent border-1 border-dark-subtle form-select-sm"
+                    id="">
+                    {%for model in models%}
+                    <option value="{{model}}">{{model}}</option>
+                    {%empty%}
+                    <option value="empty">no models available</option>
+                    {%endfor%}
+                </select>
+                <input type="hidden" id="chatID" name="Chat_ID" value="-1">
+            </form>
+        </div>
+
+
+    </div>
+
+</div>
+
+<script src="{% static 'js/themeManager.js'%}"></script>
+<script src="{% static 'js/chat_manager.js'%}"></script>
+<script src={%static "js/bootstrap.bundle.min.js" %}></script>
+{% endblock %}

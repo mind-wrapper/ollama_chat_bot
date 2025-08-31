@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Register</title>{% endblock title %}
+{% block style %}{% static "css/login_style.css" %}{% endblock style %}
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h3 class="login-title">Register</h3>
+        </div>
+
+        <form method="POST" action="">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <input type="text" class="form-control" name="username" id="username" placeholder="Your username"
+                        required>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Your email" required>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <input type="password" name="password" class="form-control" id="password"
+                        placeholder="Your password" required>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="password">Confirm password</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <input type="password" name="password" class="form-control" id="password"
+                        placeholder="Confirm your password" required>
+                </div>
+            </div>
+
+
+            <button type="submit" class="btn btn-login">Register</button>
+
+
+            {% csrf_token %}
+        </form>
+
+        <div class="login-footer">
+            already have an account? <a href={%url 'login' %}>Log in</a>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<div class="theme-toggle" id="themeToggle">
+    <i class="bi bi-moon-fill" id="themeIcon"></i>
+</div>
+
+<script src="{% static 'js/themeManager.js'%}"></script>
+<script src={%static "js/bootstrap.bundle.min.js" %}></script>
+{% endblock %}
