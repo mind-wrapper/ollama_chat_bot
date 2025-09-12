@@ -8,7 +8,6 @@ class Chat(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     user=models.ForeignKey(User,on_delete=models.CASCADE,default=None)
     
-
     
     
 class Message(models.Model):

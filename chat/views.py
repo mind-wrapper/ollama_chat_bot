@@ -4,11 +4,34 @@ import ollama
 from .models import Chat,Message,User
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-import asyncio
+import requests
+import json
+
+
+api="http://localhost:11434/api/"
 
 # Create your views here.
 
+
+
+#util functions
+def get_models():
+    url = api+"tags"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        models = [model["model"] for model in data["models"]]
+        return models
+    else:
+        
+        return []
+
+
+
+#views
 
 def login_page(request):
     if request.user.is_authenticated:
@@ -36,8 +59,18 @@ def logout_user(request):
 def register_user(request):
     if request.user.is_authenticated:
         return redirect("main_chat")
-    
-    return render(request,"register.html",{"theme":"dark"})
+    if request.method=="POST":
+        form=UserCreationForm(request.POST)
+        if form.is_valid():
+            user=form.save(commit=False)
+            user.save()
+            
+            login(request,user=user)
+            Chat(user=request.user).save()
+            return redirect("main_chat")  
+        
+    form=UserCreationForm
+    return render(request,"register.html",{"theme":"dark","form":form})
 
 async def generate_chat_title(chat,rsp,msg):
     if chat.title=="New chat":
@@ -57,22 +90,29 @@ def del_chat(request,id):
 
 @login_required(login_url="login")
 def main_app(request):
-    models=["qwen2.5-coder:latest","qwen-2"]
-    return render(request,"chat.html",{"theme":"dark",
-                                       "models":models})
+    
+    
+    models=get_models()
+    
+    return render(request,"chat.html",{"theme":"dark","models":models})
 
 @login_required(login_url="login")
 def send_prompt(request):
-    models=ollama.list()
-    msg=''
     id_chat=request.POST["Chat_ID"]
     chat=Chat.objects.get(id=id_chat)
     if chat==None:
         messages.error("You must create a chat first")
-        return redirect("main_chat")
-        #return JsonResponse({"succeded":"no","error":"chat not found"})
-    for i in ollama.chat(model='qwen2.5-coder:latest', messages=[{'role': 'user','content': request.POST["prompt"]}],stream=True):
-        msg+=i.message["content"]
+        return JsonResponse({"succeded":"no","error":"chat not found"})
+
+    #this data request to ollama api 
+    model_url=api+"generate"
+    data_message={
+  "model": "qwen2.5-coder:latest",
+  "prompt": request.POST["prompt"],
+  "stream": False}
+
+    response=requests.post(model_url,json=data_message)
+    msg=response.json()["response"] 
     Message(message=request.POST["prompt"],response=msg,chat=chat).save()
     #asyncio.run( generate_chat_title(chat,msg,request.POST["prompt"]))
     return JsonResponse({"succeded":"yes","response":msg})

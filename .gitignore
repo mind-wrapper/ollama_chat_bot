@@ -1,0 +1,5 @@
+env/
+chat/migrations/
+chats/__pycache__/
+req.py
+ollama_chat/__pycache__/
